@@ -37,8 +37,18 @@ npx paperclipai company import dylanjlennon/paperclip-for-realestate \
   --target new --new-company-name "My Real Estate Team" --yes
 ```
 
-**Agents are imported paused.** Nothing runs, spends money, or contacts anyone until you resume
-an agent in the Paperclip UI. Start with the Chief of Staff and the **First-run setup** task.
+**Check agent status after import.** Agents were `paused` right after import in testing but showed
+`idle` a few minutes later, and routines are active. If you do not want anything to run yet, pause
+the agents you are not ready for. Start with the Chief of Staff and the **First-run setup** task.
+Agents never contact anyone outside the team without your approval.
+
+### Troubleshooting
+
+**`Claude Code 2.1.257 does not support this model; version 2.1.280 or newer is required`**
+Paperclip's default engine bundles its own Claude Code, so `claude update` will not fix it. Run
+the agents with your installed CLI instead: set `engine: cli` and `command: claude` in each
+agent's adapter config (Agent settings in the UI, or `PATCH /api/agents/<id>`). This also uses
+your Claude Code subscription login, so no API key is needed.
 
 When asked for inputs, set `MARKET`, `STATE`, `BROKERAGE_NAME` and `AGENT_NAME`. Then run the
 **First-run setup** task and answer the Chief of Staff's questions.

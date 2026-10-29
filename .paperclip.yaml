@@ -82,7 +82,7 @@ routines:
   lead-triage:
     triggers:
       - kind: schedule
-        cronExpression: "*/15 8-20 * * *"
+        cronExpression: "0 8-20 * * *"
         timezone: America/New_York
   weekly-market-snapshot:
     triggers:

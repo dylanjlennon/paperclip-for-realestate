@@ -97,7 +97,7 @@ Market-agnostic: no city is hard-coded. Four required inputs (`MARKET`, `STATE`,
 Skills and starter work: five skills (`lead-qualification`, `market-report`,
 `transaction-timeline`, `fair-housing-copy`, `approval-gate`); four projects (Setup, Lead
 Pipeline, Local Authority, Operations) with a one-time first-run task and five recurring
-routines (lead triage every 15 min in business hours, weekly snapshot and newsletter on
+routines (lead triage hourly in business hours, weekly snapshot and newsletter on
 Wednesdays, Monday owner brief, daily deadline digest).
 - Why: the recurring routines turn the goals in `COMPANY.md` into scheduled work.
 - Scoring weights in `lead-qualification` (30/25/20/15/10) are an initial judgment call, not
@@ -148,3 +148,39 @@ secrets/personal-path scan came back clean. Then tested the stranger's install p
 GitHub repo and produced the identical plan (6 agents, 4 projects, 6 tasks, 5 skills).
 - Status at this checkpoint: package built, installed locally, installable from GitHub.
   Not yet done: real agent runs on live data (needs owner inputs and approval to spend).
+
+## P-020 · 2026-10-29 · human · decision
+Run the agents on the owner's Claude Code subscription, not an API key. Verified before the
+first run: no ANTHROPIC_API_KEY / ANTHROPIC_AUTH_TOKEN / CLAUDE_CODE_OAUTH_TOKEN in the shell,
+the Paperclip server process or its config, and `claude auth status` reports `authMethod: claude.ai`.
+
+## P-021 · 2026-10-29 · claude · result
+First agent run failed: `API Error: 400 Claude Code 2.1.257 does not support this model;
+version 2.1.280 or newer is required`. Cause: Paperclip's default ACP engine bundles its own
+Claude Code (Agent SDK 0.3.257 -> 2.1.257), separate from the owner's installed `claude`
+(2.1.312). `claude update` reported "already up to date", so updating the CLI could not help.
+- Fix: set `engine: "cli"` and `command: "claude"` on the agent, so Paperclip runs the installed
+  CLI with the owner's subscription login. Applied locally to the Chief of Staff.
+- Side effect observed: Paperclip scheduled automatic retries of the failed run. Paused the
+  agent to stop the loop before changing config. The failed requests were rejected with a 400,
+  so no model usage was consumed.
+- Lesson for the article: "just update Claude Code" was the obvious fix and was wrong; the
+  error message pointed at a version that lived in a different place than the one being updated.
+
+## P-022 · 2026-10-29 · claude · result
+First successful run: Chief of Staff on PAP-1 (First-run setup), status `succeeded`, exit 0,
+reported cost $0.86 (API-equivalent figure; billed against the subscription, not an API key).
+The agent posted the owner interview as a question card on PAP-1 for the human to answer
+(market inputs, data sources, lead sources, brokerage disclosure rules, call times).
+- It could not move PAP-1 out of `blocked` or post a status comment. Not yet diagnosed; likely a
+  permission scope for the agent. To investigate.
+- Governance check: the agent stopped and asked the human instead of guessing. This is the
+  behavior `approval-gate` is designed to produce.
+- Other five agents remain paused on purpose to limit subscription usage.
+
+## P-023 · 2026-10-29 · claude · customization
+Changed the `lead-triage` routine from every 15 minutes to hourly (`0 8-20 * * *`) in the
+template. Proposed to the owner before the run and not objected to.
+- Why: on a subscription, usage limits are the real ceiling; 15-minute polling is wasteful
+  before real leads exist. Owners with high lead volume can tighten it.
+- Artifacts: `.paperclip.yaml`
