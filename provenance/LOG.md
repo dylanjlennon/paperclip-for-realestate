@@ -1,0 +1,125 @@
+# Provenance Log
+
+Every customization and decision made while building **Paperclip for Real Estate**, in order.
+Each entry records: who decided, what, why, and the artifact it produced.
+This log is the source material for the companion article and video.
+
+Format: `ID · date · actor · type · summary` followed by rationale and artifacts.
+Actors: `human` (Dylan Lennon), `claude` (Claude Code, Sonnet 5.5).
+Types: `goal`, `decision`, `customization`, `setup`, `result`.
+
+---
+
+## P-001 · 2026-10-29 · human · goal
+Dylan runs an AI mastermind for real estate agents and wants to know how to create and run a
+real estate company from code.
+- Artifact: original prompt (conversation turn 1)
+
+## P-002 · 2026-10-29 · human · decision
+Use the open-source Paperclip project (https://github.com/paperclipai/paperclip) as the
+orchestration layer instead of building agent orchestration from scratch.
+- Why: Paperclip already provides org charts, budgets, approval gates and a dashboard.
+- Artifact: https://github.com/paperclipai/paperclip
+
+## P-003 · 2026-10-29 · claude · decision
+Read the upstream README before committing to the approach. Finding: Paperclip is an
+orchestrator for AI agents (Node.js server + React UI), not a business generator. The
+"real estate company" therefore has to be configured inside it: goal, org chart, skills,
+governance, budgets.
+- Artifact: this log; chat explanation to Dylan
+
+## P-004 · 2026-10-29 · human · decision
+Approve cloning Paperclip locally to `~/paperclip` and installing/running it.
+- Why: low-risk, local-only; Dylan said "YES".
+
+## P-005 · 2026-10-29 · human · goal
+Document the entire build for an article and a YouTube video; present at the end how well
+the business goal was met. Everything is to be built and run toward the real estate
+business goal.
+
+## P-006 · 2026-10-29 · human · decision
+Publish the work as a public GitHub repo named "paperclip for real estate" so other people
+can actually use it.
+- Design choice (claude): the repo is a *company template pack* layered on top of upstream
+  Paperclip (org chart, skills, governance, setup script, provenance), not a copy of
+  Paperclip's source. Users install upstream Paperclip and apply the pack.
+- Why: easier to keep current with upstream, and avoids redistributing a 200 MB codebase.
+
+## P-007 · 2026-10-29 · human · decision
+All customizations and decisions must be provenance-tracked so the video, article and code
+can all be derived from the record. This file plus per-artifact `Provenance:` headers are
+the mechanism.
+
+## P-008 · 2026-10-29 · claude · setup
+Started `git clone` of upstream into `~/paperclip` (large repo, exceeded the 120 s tool
+timeout and moved to background). Created the empty template repo at
+`~/paperclip-for-realestate` with this log.
+
+## P-009 · 2026-10-29 · claude · decision
+Machine has Node 23.11; Paperclip requires >=24.11. Rather than change the system Node,
+run Paperclip through `npx -p node@24` so a temporary Node 24 is used for that process only.
+- Why: no system-wide change, easily reversible.
+- Status: server start in progress at time of writing (see later entries for outcome).
+
+## P-010 · 2026-10-29 · claude · decision
+Package the company in the Agent Companies format (`agentcompanies/v1`) with a
+`.paperclip.yaml` sidecar, instead of a custom script that calls Paperclip's API.
+- Why: Paperclip's `company import <owner>/<repo>` can install it straight from GitHub, so
+  anyone can use it with one command. Markdown stays readable and portable to other runtimes.
+- Source: `docs/companies/companies-spec.md` in paperclipai/paperclip (read 2026-10-29).
+- Artifacts: `COMPANY.md`, `.paperclip.yaml`
+
+## P-011 · 2026-10-29 · claude · customization
+Org design: one Chief of Staff (the Paperclip "ceo" role) with five direct reports: Lead
+Concierge, Market Analyst, Content Editor, Transaction Coordinator, Compliance Officer.
+The licensed human is the owner above the org chart.
+- Why: maps to the four jobs a solo agent or small team actually has (leads, content, deals,
+  risk) and keeps compliance as its own checkpoint rather than an afterthought.
+- Artifacts: `agents/*/AGENTS.md`
+
+## P-012 · 2026-10-29 · claude · decision
+Governance: agents prepare, the human decides. A shared `approval-gate` skill defines what
+always needs approval (anything client-facing or public, anything touching price, contract or
+fees, legal/tax/lending statements, over-budget spend, consent changes). The Compliance
+Officer reviews all outbound drafts first and its result is attached to the approval request.
+- Why: licensing law and Fair Housing exposure sit with the human; an AI-only brokerage is not
+  a legal option. Also the main trust requirement for other agents adopting this.
+- Artifacts: `skills/approval-gate/SKILL.md`, `skills/fair-housing-copy/SKILL.md`,
+  `agents/compliance-officer/AGENTS.md`, `COMPANY.md` operating rules
+
+## P-013 · 2026-10-29 · claude · decision
+Market-agnostic: no city is hard-coded. Four required inputs (`MARKET`, `STATE`,
+`BROKERAGE_NAME`, `AGENT_NAME`) declared in `.paperclip.yaml`.
+- Why: Dylan wants other people to use it; examples reference Asheville/NC only as sample values.
+- Artifacts: `COMPANY.md`, `.paperclip.yaml`
+
+## P-014 · 2026-10-29 · claude · customization
+Skills and starter work: five skills (`lead-qualification`, `market-report`,
+`transaction-timeline`, `fair-housing-copy`, `approval-gate`); four projects (Setup, Lead
+Pipeline, Local Authority, Operations) with a one-time first-run task and five recurring
+routines (lead triage every 15 min in business hours, weekly snapshot and newsletter on
+Wednesdays, Monday owner brief, daily deadline digest).
+- Why: the recurring routines turn the goals in `COMPANY.md` into scheduled work.
+- Scoring weights in `lead-qualification` (30/25/20/15/10) are an initial judgment call, not
+  validated against real conversion data. To be tuned.
+- Artifacts: `skills/*`, `projects/*`
+
+## P-015 · 2026-10-29 · claude · decision
+Runtime defaults: all agents use the `claude_local` adapter; Opus for the Chief of Staff and
+Compliance Officer (judgment-heavy), Sonnet for the rest. Monthly budgets: Chief $30, Lead
+Concierge $30, Analyst $20, Editor $20, Coordinator $20, Compliance $15 (total $135).
+Schedules default to America/New_York.
+- Why: budgets are a guess to be calibrated from real usage in the first weeks.
+- Field names (`adapter.type`, `budgetMonthlyCents`, `inputs.env`, `routines.<task>.triggers`)
+  verified against `server/src/services/company-portability.ts` in the Paperclip source.
+- Artifacts: `.paperclip.yaml`
+
+## P-016 · 2026-10-29 · claude · result
+First attempt to start Paperclip failed: `ENOSPC: no space left on device` while npm was
+unpacking dependencies. The disk was 100% full (114 MB free of 228 GB). It left a corrupt 928 MB
+partial install in `~/.npm/_npx/cb4559dfd0885d66`.
+- Decision: delete only that directory (created by this run, unusable) and retry. Did not touch
+  any pre-existing user files (e.g. ~/Downloads is 6.6 GB; ~/.npm cache is otherwise untouched).
+- Outcome: free space rose to 4.2 GB; retried the start (outcome logged below).
+- Lesson for the article: "run it from code" has real environmental prerequisites. Added a
+  disk-space note to the README.

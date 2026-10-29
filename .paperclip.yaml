@@ -1,0 +1,106 @@
+# Paperclip runtime settings for "Paperclip for Real Estate".
+# The markdown files are the portable company; this sidecar holds Paperclip-specific fidelity.
+# Provenance: P-011 (roles), P-012 (governance), P-014 (routines), P-015 (adapters, budgets).
+schema: paperclip/v1
+
+x-market-inputs: &market-inputs
+  env:
+    MARKET:
+      kind: plain
+      requirement: required
+      description: Farm area, city or county, e.g. "Asheville / Buncombe County"
+    STATE:
+      kind: plain
+      requirement: required
+      description: Two-letter licensing state, e.g. NC
+    BROKERAGE_NAME:
+      kind: plain
+      requirement: required
+      description: Brokerage name that must appear in advertising
+    AGENT_NAME:
+      kind: plain
+      requirement: required
+      description: The licensed human owner
+
+agents:
+  chief-of-staff:
+    role: ceo
+    adapter:
+      type: claude_local
+      config:
+        model: claude-opus-5-5
+    budgetMonthlyCents: 3000
+    inputs: *market-inputs
+
+  lead-concierge:
+    role: agent
+    adapter:
+      type: claude_local
+      config:
+        model: claude-sonnet-5-5
+    budgetMonthlyCents: 3000
+    inputs: *market-inputs
+
+  market-analyst:
+    role: agent
+    adapter:
+      type: claude_local
+      config:
+        model: claude-sonnet-5-5
+    budgetMonthlyCents: 2000
+    inputs: *market-inputs
+
+  content-editor:
+    role: agent
+    adapter:
+      type: claude_local
+      config:
+        model: claude-sonnet-5-5
+    budgetMonthlyCents: 2000
+    inputs: *market-inputs
+
+  transaction-coordinator:
+    role: agent
+    adapter:
+      type: claude_local
+      config:
+        model: claude-sonnet-5-5
+    budgetMonthlyCents: 2000
+    inputs: *market-inputs
+
+  compliance-officer:
+    role: agent
+    adapter:
+      type: claude_local
+      config:
+        model: claude-opus-5-5
+    budgetMonthlyCents: 1500
+    inputs: *market-inputs
+
+# Schedules use America/New_York by default. Change the timezone to match your market.
+routines:
+  lead-triage:
+    triggers:
+      - kind: schedule
+        cronExpression: "*/15 8-20 * * *"
+        timezone: America/New_York
+  weekly-market-snapshot:
+    triggers:
+      - kind: schedule
+        cronExpression: "0 6 * * 3"
+        timezone: America/New_York
+  weekly-newsletter:
+    triggers:
+      - kind: schedule
+        cronExpression: "0 9 * * 3"
+        timezone: America/New_York
+  monday-owner-brief:
+    triggers:
+      - kind: schedule
+        cronExpression: "0 7 * * 1"
+        timezone: America/New_York
+  daily-deadline-digest:
+    triggers:
+      - kind: schedule
+        cronExpression: "0 7 * * *"
+        timezone: America/New_York
