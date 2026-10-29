@@ -123,3 +123,20 @@ partial install in `~/.npm/_npx/cb4559dfd0885d66`.
 - Outcome: free space rose to 4.2 GB; retried the start (outcome logged below).
 - Lesson for the article: "run it from code" has real environmental prerequisites. Added a
   disk-space note to the README.
+
+## P-017 · 2026-10-29 · claude · result
+Retry succeeded. `paperclipai onboard --yes` (quickstart: embedded Postgres, local disk,
+loopback only) started Paperclip at http://127.0.0.1:3100 using a temporary Node 24 (P-009).
+The first `paperclipai run` attempt had only failed because onboarding had not been done.
+
+## P-018 · 2026-10-29 · claude · result
+Dry-run import of this package passed on a real Paperclip instance: 6 agents, 4 projects,
+6 tasks (5 recognized as recurring routines), 5 skills. Applied with `company import --yes`.
+Verified through the API afterwards: models, roles, budgets ($135 total) and all five cron
+schedules matched `.paperclip.yaml`; one backlog issue (PAP-1 First-run setup) was created.
+- Finding: imported agents start **paused**. Routines are active but cannot run until an
+  agent is resumed, so a fresh import spends nothing and contacts no one. Documented in README.
+- Finding: non-interactive imports require `--yes`. Documented in README.
+- Not yet tested: import via the GitHub shorthand (needs the repo to be public; see P-019).
+- Not done on purpose: resuming agents. That spends the owner's Claude usage and needs real
+  `MARKET`/`STATE`/`BROKERAGE_NAME`/`AGENT_NAME` values, which only the owner can supply.

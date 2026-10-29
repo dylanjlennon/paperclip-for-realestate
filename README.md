@@ -32,13 +32,22 @@ You need Node.js 24.11+, about 1 GB of free disk for the install, and a running 
 npx paperclipai company import dylanjlennon/paperclip-for-realestate \
   --target new --new-company-name "My Real Estate Team" --dry-run
 
-# Then apply
+# Then apply (--yes is required in a non-interactive shell)
 npx paperclipai company import dylanjlennon/paperclip-for-realestate \
-  --target new --new-company-name "My Real Estate Team"
+  --target new --new-company-name "My Real Estate Team" --yes
 ```
+
+**Agents are imported paused.** Nothing runs, spends money, or contacts anyone until you resume
+an agent in the Paperclip UI. Start with the Chief of Staff and the **First-run setup** task.
 
 When asked for inputs, set `MARKET`, `STATE`, `BROKERAGE_NAME` and `AGENT_NAME`. Then run the
 **First-run setup** task and answer the Chief of Staff's questions.
+
+## Status
+
+v0.1.0. Verified: the package passes Paperclip's importer and every agent, budget, model and
+schedule lands as written (see provenance P-018). Not yet verified: real agent runs against live
+lead and market data. Treat the prompts and the lead-scoring weights as a starting point to tune.
 
 ## Make it yours
 
