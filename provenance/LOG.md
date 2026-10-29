@@ -140,3 +140,11 @@ schedules matched `.paperclip.yaml`; one backlog issue (PAP-1 First-run setup) w
 - Not yet tested: import via the GitHub shorthand (needs the repo to be public; see P-019).
 - Not done on purpose: resuming agents. That spends the owner's Claude usage and needs real
   `MARKET`/`STATE`/`BROKERAGE_NAME`/`AGENT_NAME` values, which only the owner can supply.
+
+## P-019 · 2026-10-29 · claude · result
+Published https://github.com/dylanjlennon/paperclip-for-realestate (public, MIT) after a
+secrets/personal-path scan came back clean. Then tested the stranger's install path:
+`paperclipai company import dylanjlennon/paperclip-for-realestate --dry-run` resolved the
+GitHub repo and produced the identical plan (6 agents, 4 projects, 6 tasks, 5 skills).
+- Status at this checkpoint: package built, installed locally, installable from GitHub.
+  Not yet done: real agent runs on live data (needs owner inputs and approval to spend).
